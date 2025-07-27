@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "789976747725",
+    "firebase_url": "https://testefirebase-951ee.firebaseio.com",
+    "project_id": "testefirebase-951ee",
+    "storage_bucket": "testefirebase-951ee.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:789976747725:android:afb5d48bf2c877af1e2384",
+        "android_client_info": {
+          "package_name": "br.com.flutterdicas.moviesapp.firebase_movies_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "789976747725-pj5a6is83bmdr334ncj55bo2fd814fbl.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAOgDI_k89L6Bv2Tskr87kjWDUkIC6EH0Q"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "789976747725-pg84i78p7bijsf3i6u2330qc9p10g2ja.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
