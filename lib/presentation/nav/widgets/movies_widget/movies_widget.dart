@@ -11,9 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 import 'package:lottie/lottie.dart';
 import 'package:firebase_movies_app/core/const/assets_paths_const.dart';
-import 'package:firebase_movies_app/core/extensions/ui/media_query_extension.dart';
-import 'package:firebase_movies_app/core/extensions/ui/sizes_extension.dart';
-import 'package:firebase_movies_app/core/enums/sizes_enum.dart';
+
 
 class MoviesWidget extends StatefulWidget {
   const MoviesWidget({super.key});
@@ -117,7 +115,8 @@ class _MoviesWidgetState extends State<MoviesWidget> with LoadingErrorMixin {
                   Positioned.fill(
                     child: Container(
                       color: Colors.black.withValues(alpha: .7),
-                      child: Center(
+                      child: Align(
+                        alignment: Alignment.topCenter,
                         child: Lottie.asset(
                           AssetsPathsConst.animationPopcorn,
                           width: 200,
