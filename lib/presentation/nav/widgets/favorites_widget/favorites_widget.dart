@@ -61,9 +61,10 @@ class FavoritesWidget extends StatelessWidget {
                                       ),
                                     ),
                                 child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     SizedBox(
-                                      width: context.getWidth * 0.35,
+                                      width: context.getWidth * 0.30,
                                       child: NetworkMovieImageWidget(
                                         movieImage: favoriteMovie.imagePath,
                                       ),
@@ -71,13 +72,20 @@ class FavoritesWidget extends StatelessWidget {
                                     const SizedBoxWidget.md(),
                                     Expanded(
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
-                                          TextWidget.normal(favoriteMovie.title),
+                                          TextWidget.normal(
+                                            favoriteMovie.title,
+                                          ),
                                           const SizedBoxWidget.sm(),
-                                          TextWidget.small(favoriteMovie.overview),
+                                          TextWidget.small(
+                                            favoriteMovie.overview,
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 3,
+                                          ),
                                         ],
-                                      ) 
+                                      ),
                                     ),
                                   ],
                                 ),

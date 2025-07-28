@@ -11,9 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:youtube_player_iframe/youtube_player_iframe.dart';
 import 'package:lottie/lottie.dart';
 import 'package:firebase_movies_app/core/const/assets_paths_const.dart';
-import 'package:firebase_movies_app/core/extensions/ui/media_query_extension.dart';
-import 'package:firebase_movies_app/core/extensions/ui/sizes_extension.dart';
-import 'package:firebase_movies_app/core/enums/sizes_enum.dart';
+
 
 class MoviesWidget extends StatefulWidget {
   const MoviesWidget({super.key});
@@ -24,7 +22,7 @@ class MoviesWidget extends StatefulWidget {
 
 class _MoviesWidgetState extends State<MoviesWidget> with LoadingErrorMixin {
   final _moviesCarouselCtrl = PageController(viewportFraction: 0.4);
-
+  bool _isVideoLoading = false;
   @override
   void initState() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -43,11 +41,12 @@ class _MoviesWidgetState extends State<MoviesWidget> with LoadingErrorMixin {
 
     setState(() {
       moviesWidgetCtrl.currentPage = _moviesCarouselCtrl.page ?? 0;
+      _isVideoLoading = true;
     });
     if (moviesWidgetCtrl.currentPage.round() == moviesWidgetCtrl.currentPage) {
-      initVideo(navCtrl.moviesList[
-        moviesWidgetCtrl.currentPage.round()
-      ].videoId);
+      initVideo(
+        navCtrl.moviesList[moviesWidgetCtrl.currentPage.round()].videoId,
+      );
     }
   }
 
@@ -61,9 +60,17 @@ class _MoviesWidgetState extends State<MoviesWidget> with LoadingErrorMixin {
       (video) => video.videoId != null,
     );
     videoPlayerCtrl.load(videoId ?? firstVideoWihId.videoId!);
+
+    Future.delayed(const Duration(milliseconds: 1500), () {
+      if (mounted) {
+        setState(() {
+          _isVideoLoading = false;
+        });
+      }
+    });
   }
 
-  Future<void> getMoviesAndInitVideo() async{
+  Future<void> getMoviesAndInitVideo() async {
     final navCtrl = Provider.of<NavControllers>(context, listen: false);
     setError(null);
     setIsLoading(true);
@@ -79,44 +86,48 @@ class _MoviesWidgetState extends State<MoviesWidget> with LoadingErrorMixin {
   Widget build(BuildContext context) {
     final navCtrl = Provider.of<NavControllers>(context);
     final moviesWidgetCtrl = Provider.of<MoviesWidgetController>(context);
+    final isVideoChanging =
+        _moviesCarouselCtrl.hasClients &&
+        (moviesWidgetCtrl.currentPage.round() != _moviesCarouselCtrl.page ||
+            _isVideoLoading);
     return OrientationBuilder(
       builder: (_, Orientation orientation) {
         final isPortrait = orientation == Orientation.portrait;
-        return errorMessage != null ? ErrorWithButtonWidget(
-          errorMessage: errorMessage!,
-          tryAgain: getMoviesAndInitVideo,
-        ): Stack(
-          alignment: Alignment.bottomCenter,
-          children: [
-            if(!isLoading) MoviesYoutubePlayerWidget(isPortrait: isPortrait),
-            if(isPortrait) const MoviesCinemaSeatsImageWidget(),
-            if(isLoading) const Center(
-              child: CircularProgressIndicator(),
-            ),
-            if(!isLoading && navCtrl.moviesList.isNotEmpty)
-            MoviesCarouselWidget(
-              currentPage: moviesWidgetCtrl.currentPage,
-              isPortrait: isPortrait,
-              moviesCarouselCtrl: _moviesCarouselCtrl,
-            ),
-            if (_moviesCarouselCtrl.hasClients &&
-                    moviesWidgetCtrl.currentPage.round() !=
-                        _moviesCarouselCtrl.page)
-                  Positioned(
-                    left: context.getWidth / 2 - 100,
-                    top:
-                        context.getTopPadding +
-                        kToolbarHeight -
-                        SizesEnum.xxxl.getSize,
-                    child: Lottie.asset(
-                      AssetsPathsConst.animationPopcorn,
-                      width: 200,
-                      repeat: true,
-                      animate: true,
+        return errorMessage != null
+            ? ErrorWithButtonWidget(
+              errorMessage: errorMessage!,
+              tryAgain: getMoviesAndInitVideo,
+            )
+            : Stack(
+              alignment: Alignment.bottomCenter,
+              children: [
+                if (!isLoading)
+                  MoviesYoutubePlayerWidget(isPortrait: isPortrait),
+                if (isPortrait) const MoviesCinemaSeatsImageWidget(),
+                if (isLoading) const Center(child: CircularProgressIndicator()),
+                if (!isLoading && navCtrl.moviesList.isNotEmpty)
+                  MoviesCarouselWidget(
+                    currentPage: moviesWidgetCtrl.currentPage,
+                    isPortrait: isPortrait,
+                    moviesCarouselCtrl: _moviesCarouselCtrl,
+                  ),
+                if (isVideoChanging)
+                  Positioned.fill(
+                    child: Container(
+                      color: Colors.black.withValues(alpha: .7),
+                      child: Align(
+                        alignment: Alignment.topCenter,
+                        child: Lottie.asset(
+                          AssetsPathsConst.animationPopcorn,
+                          width: 200,
+                          repeat: true,
+                          animate: true,
+                        ),
+                      ),
                     ),
-                  )
-          ],
-        );
+                  ),
+              ],
+            );
       },
     );
   }

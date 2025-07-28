@@ -8,6 +8,7 @@ class TextWidget extends StatelessWidget {
   final TextAlign? textAlign;
   final Color? color;
   final TextOverflow? overflow;
+  final int? maxLines;
 
   const TextWidget(
     this.text, {
@@ -16,6 +17,7 @@ class TextWidget extends StatelessWidget {
     this.textAlign,
     this.color,
     this.overflow,
+    this.maxLines,
   });
 
   TextWidget.bold(
@@ -25,6 +27,7 @@ class TextWidget extends StatelessWidget {
     this.textAlign,
     this.color,
     this.overflow,
+    this.maxLines,
   }) : style = textStyle ?? FirebaseMoviesAppTextStyles.getNormalBoldStyle;
 
   TextWidget.title(
@@ -34,6 +37,7 @@ class TextWidget extends StatelessWidget {
     this.textAlign,
     this.color,
     this.overflow,
+    this.maxLines,
   }) : style = textStyle ?? FirebaseMoviesAppTextStyles.getTitleStyle;
 
   TextWidget.normal(
@@ -43,6 +47,7 @@ class TextWidget extends StatelessWidget {
     this.textAlign,
     this.color,
     this.overflow,
+    this.maxLines,
   }) : style = textStyle ?? FirebaseMoviesAppTextStyles.getNormalStyle;
   
   TextWidget.small(
@@ -52,6 +57,7 @@ class TextWidget extends StatelessWidget {
     this.textAlign,
     this.color,
     this.overflow,
+    this.maxLines,
   }) : style = textStyle ?? FirebaseMoviesAppTextStyles.getSmallStyle;
 
   @override
@@ -63,6 +69,7 @@ class TextWidget extends StatelessWidget {
       ),
       textAlign: textAlign,
       overflow: overflow,
+      maxLines: maxLines,
     );
   }
 }
