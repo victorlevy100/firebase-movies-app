@@ -4,12 +4,14 @@ import 'package:flutter/material.dart';
 class NetworkMovieImageWidget extends StatelessWidget {
   final String movieImage;
   final double? height;
+  final double? width;
   final BoxFit? boxFit;
 
   const NetworkMovieImageWidget({
     super.key,
     required this.movieImage,
     this.height,
+    this.width,
     this.boxFit,
   });
 
@@ -18,6 +20,7 @@ class NetworkMovieImageWidget extends StatelessWidget {
     return Image.network(
       '${DotEnvService.getApiImagesUrl}$movieImage',
       height: height,
+      width: width,
       fit: boxFit,
     );
   }

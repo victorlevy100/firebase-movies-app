@@ -1,3 +1,4 @@
+import 'package:firebase_movies_app/core/config/firebase_movies_app_colors.dart';
 import 'package:firebase_movies_app/core/enums/sizes_enum.dart';
 import 'package:firebase_movies_app/core/extensions/dates/datess_extension.dart';
 import 'package:firebase_movies_app/core/extensions/ui/media_query_extension.dart';
@@ -51,83 +52,121 @@ class _MovieDetailsScreenWidgetState extends State<MovieDetailsScreenWidget>
     final movie = movieArgs as MovieModel;
     final movieDetailsCtrl = Provider.of<MovieDetailsController>(context);
     final favoriteMovies = context.watch<List<FavoriteMovieModel>>();
+
     return Scaffold(
-      body: Stack(
-        children: [
-          CustomScrollView(
-            slivers: [
-              SliverAppBar(
-                flexibleSpace: Hero(
-                  tag: 'movie-picture-${movie.id}',
-                  child: NetworkMovieImageWidget(
-                    movieImage: movie.imagePath,
-                    height: context.getHeight,
-                    boxFit: BoxFit.cover,
+      body: CustomScrollView(
+        slivers: [
+          SliverAppBar(
+            expandedHeight:
+                context.getHeight * 0.9, // Aumentar a altura para acomodar o texto
+            pinned: true,
+            stretch: true,
+            backgroundColor: FirebaseMoviesAppColors.primaryColor,
+            surfaceTintColor: Colors.transparent,
+            elevation: 0,
+            iconTheme: const IconThemeData(
+              color: Colors.white, // Cor da seta de voltar
+            ),
+            flexibleSpace: FlexibleSpaceBar(
+              background: Stack(
+                children: [
+                  Positioned.fill(
+                    top: kToolbarHeight + MediaQuery.of(context).padding.top,
+                    child: Hero(
+                      tag: 'movie-picture-${movie.id}',
+                      child: NetworkMovieImageWidget(
+                        movieImage: movie.imagePath,
+                        height: context.getHeight * 0.8, // Ajustar altura da imagem
+                        width: context.getWidth,
+                        boxFit: BoxFit.cover,
+                      ),
+                    ),
                   ),
+                  // Gradiente sobrepondo a imagem
+                  Positioned.fill(
+                    top: kToolbarHeight + MediaQuery.of(context).padding.top,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.transparent,
+                            Colors.transparent,
+                            Colors.black.withValues(alpha: .3),
+                            Colors.black.withValues(alpha: .6),
+                            Colors.black.withValues(alpha: .9),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  // Textos sobrepostos à imagem
+                  Positioned(
+                    bottom: 0,
+                    left: 0,
+                    right: 0,
+                    height:
+                        context.getHeight * 0.5, // Definir altura fixa para a área de texto
+                    child: Container(
+                      padding: EdgeInsets.fromLTRB(
+                        SizesEnum.md.getSize,
+                        SizesEnum.md.getSize * 2, // Aumentar padding top para descer o texto
+                        SizesEnum.md.getSize,
+                        MediaQuery.of(context).padding.bottom + SizesEnum.xxxs.getSize,
+                      ),
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            const SizedBoxWidget.lg(), // Espaço adicional no topo
+                            TextWidget.title(
+                              movie.title,
+                              textAlign: TextAlign.center,
+                              color: Colors.white,
+                            ),
+                            const SizedBoxWidget.xs(),
+                            TextWidget.small(
+                              'Nos cinemas dia ${movie.releaseDate.convertToDateDDMMAAAA()}',
+                              color: Colors.white70,
+                            ),
+                            const SizedBoxWidget.md(),
+                            StarRatingWidget(
+                              rating: (movie.voteAverage / 2).round(),
+                            ),
+                            const SizedBoxWidget.lg(),
+                            TextWidget.title('Sinopse', color: Colors.white),
+                            const SizedBoxWidget.md(),
+                            TextWidget.normal(
+                              movie.overview,
+                              textAlign: TextAlign.center,
+                              color: Colors.white,
+                            ),
+                            const SizedBoxWidget.lg(),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            actions: [
+              Padding(
+                padding: const EdgeInsets.only(right: 16),
+                child: FavoriteIconButtonWidget(
+                  isFavorite:
+                      favoriteMovies.indexWhere(
+                        (favoriteMovie) => favoriteMovie.id == movie.id,
+                      ) !=
+                      -1,
+                  onPressed: (bool isFavorite) {
+                    toggleFavorite(isFavorite, movieDetailsCtrl, movie);
+                  },
                 ),
-                collapsedHeight: context.getHeight,
-                stretch: true,
               ),
             ],
           ),
-          Positioned(
-            top: context.getHeight / 2.5,
-            width: context.getWidth,
-            child: Container(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topCenter,
-                  end: Alignment.bottomCenter,
-                  colors: [
-                    Colors.transparent,
-                    Colors.black.withValues(alpha: .8),
-                    Colors.black.withValues(alpha: .9),
-                    Colors.black.withValues(alpha: .95),
-                    Colors.black,
-                  ],
-                ),
-              ),
-              height: context.getHeight / 1.5,
-              child: SingleChildScrollView(
-                padding: EdgeInsets.fromLTRB(
-                  SizesEnum.md.getSize,
-                  SizesEnum.md.getSize * 2.5,
-                  SizesEnum.md.getSize,
-                  0,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    TextWidget.title(movie.title, textAlign: TextAlign.center),
-                    const SizedBoxWidget.xs(),
-                    TextWidget.small(
-                      'Nos cinemas dia ${movie.releaseDate.convertToDateDDMMAAAA()}',
-                    ),
-                    const SizedBoxWidget.md(),
-                    StarRatingWidget(rating: (movie.voteAverage / 2).round()),
-                    const SizedBoxWidget.lg(),
-                    TextWidget.title('Sinopse'),
-                    const SizedBoxWidget.md(),
-                    TextWidget.normal(
-                      movie.overview,
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBoxWidget.lg(),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-            top: context.getTopPadding + 2,
-            right: 16,
-            child: FavoriteIconButtonWidget(
-              isFavorite: favoriteMovies.indexWhere((favoriteMovie) => favoriteMovie.id == movie.id) != -1,
-              onPressed: (bool isFavorite) {
-                toggleFavorite(isFavorite, movieDetailsCtrl, movie);
-              },
-            ),
-          )
         ],
       ),
     );
